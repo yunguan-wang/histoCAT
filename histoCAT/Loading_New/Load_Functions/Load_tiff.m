@@ -24,7 +24,7 @@ if cellfun(@isempty,Sample_Set_arranged(i)) == 0
     fileList = getAllFiles(char(Sample_Set_arranged(i)));
     
     %Extract tiffs (besides the one representing a mask)
-    tiff_position = find(~cellfun('isempty',regexp(fileList,'(?<!mask)\.tif*')))';
+    tiff_position = find(~cellfun('isempty',regexp(fileList,'(?<!ask)\.tif*')))';
     
     %Read all tiffs
     allimagesread = cellfun(@imread,fileList(tiff_position),'UniformOutput',false)';
