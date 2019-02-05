@@ -20,6 +20,10 @@ function [Fcs_Interest_all] = Process_SingleCell_Tiff_Mask(Tiff_all,Tiff_name,Ma
 % Histology Topography Cytometry Analysis Toolbox (histoCAT)
 % Denis Schapiro - Bodenmiller Group - UZH
 
+% Get global variables
+global Sample_Set_arranged 
+
+
 %Call tiff names generating function
 [ ~,tiff_matrix,cell_name ] = MasterTiffNames_Generation(Mask_all,Tiff_name,Tiff_all);
 
@@ -82,9 +86,19 @@ for k=1:size(masks,2)
             %Get all the tiff data for each mask
             chandat = tiff_matrix{k};
             
+            %Check if tiff is empty -> multipage tiff
+            if chandat(k,1) == 0
+               large_tiff_location = fullfile(Sample_Set_arranged{k,1},'33466POST.ome.tif');
+               get_mean = @(chan) struct2array(regionprops(Current_Mask, imread(large_tiff_location,chan), 'MeanIntensity'))';
+               mean_tab = cell2mat(arrayfun(get_mean,1:length(chandat), 'UniformOutput',0));
+               
+            else
+                
             %Prepare to get the mean intensities of all channels
             get_mean = @(chan) struct2array(regionprops(Current_Mask, chandat{chan}, 'MeanIntensity'))';
             mean_tab = cell2mat(arrayfun(get_mean,1:length(chandat), 'UniformOutput',0));
+            
+            end
             
             %Get spatial features similar to CellProfiler
             props_spatial = regionprops(Current_Mask, BasicFeatures(~strcmp(BasicFeatures,'FormFactor')));
