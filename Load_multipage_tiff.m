@@ -4,16 +4,28 @@ function [Tiff_all,Tiff_name] = Load_multipage_tiff(Sample_Set_arranged,tiff_pos
 % Histology Topography Cytometry Analysis Toolbox (histoCAT)
 % Denis Schapiro - Independent Fellow -  Harvard and Broad Institute - 2019
 
-%Retrieve GUI variables
-Tiff_all = retr('Tiff_all');
-Tiff_name = retr('Tiff_name');
-if isempty(Tiff_name)
-    Tiff_name = {};
+%Retrieve GUI variables (try and catch for batch mode now)
+try
+    Tiff_all = retr('Tiff_all');
+    Tiff_name = retr('Tiff_name');
+    if isempty(Tiff_name)
+        Tiff_name = {};
+    end
+catch
+    disp('No GUI connection with Tiff_all and Tiff_name');
 end
 
 %Store marker names for multipage tiffs
-[file_marker_list,path_marker_list] = uigetfile('*.csv');
-Tiff_name_raw = (table2cell(readtable(strcat(path_marker_list,file_marker_list),'ReadVariableNames',false)))';
+% global just for batch mode
+global Marker_CSV
+if isempty(Marker_CSV) == 0
+    Tiff_name_raw = (table2cell(readtable(Marker_CSV,'ReadVariableNames',false)))';
+else
+    [file_marker_list,path_marker_list] = uigetfile('*.csv');
+    Tiff_name_raw = (table2cell(readtable(strcat(path_marker_list,file_marker_list),'ReadVariableNames',false)))';
+end
+
+
 
 %Store marker names similar to single tiff images
 for k=1:size(Tiff_name_raw,2)
@@ -23,6 +35,9 @@ end
 Tiff_all(i,:) = zeros(1,size(Tiff_name_raw,2));
 
 %Update GUI variables
-put('Tiff_all',Tiff_all);
-put('Tiff_name',Tiff_name);
+try
+    put('Tiff_all',Tiff_all);
+    put('Tiff_name',Tiff_name);
+catch
+    disp('No GUI connection with Tiff_all and Tiff_name');
 end
