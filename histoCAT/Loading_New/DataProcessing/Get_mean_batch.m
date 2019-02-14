@@ -1,6 +1,9 @@
-function [get_mean,get_mean_name] = Get_mean_batch(Marker_list,marker_position,tiff_name)
+function [get_mean,get_mean_name] = Get_mean_batch(marker_position)
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
+
+% Load session
+load session.mat
 
 % Get global variables
 global Sample_Set_arranged
@@ -15,7 +18,7 @@ large_tiff_location = fullfile(Sample_Set_arranged{1,1},tiff_name);
 get_mean = struct2array(regionprops(Current_Mask, imread(large_tiff_location,marker_position), 'MeanIntensity'))';
 get_mean_name = table2cell(Marker_list(marker_position,1));
 
-save(strcat(num2str(marker_position),'.mat'),'get_mean','get_mean_name');
+save(strcat(char(get_mean_name),'.mat'),'get_mean','get_mean_name');
 
 end
 
