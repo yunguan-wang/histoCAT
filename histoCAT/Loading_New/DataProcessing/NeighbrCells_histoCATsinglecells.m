@@ -1,6 +1,6 @@
-function [ Fcs_Interest_all,length_neighbr,sizes_neighbrs ] = NeighbrCells_histoCATsinglecells( rownum,allvarnames,expansion,Current_channels,Current_Mask,...
+function [ Fcs_Interest_all,length_neighbr,sizes_neighbrs ] = NeighbrCells_histoCATsinglecells(rownum,allvarnames,expansion,Current_channels,Current_Mask,...
     Current_singlecellinfo,Fcs_Interest_all,length_neighbr,sizes_neighbrs,HashID,k )
-% NEIGHBRCELLS_HISTOCATSINGLECELLS: This function finds the neighboring cells and 
+% NEIGHBRCELLS_HISTOCATSINGLECELLS: This function finds the neighboring cells and
 % updates all neighbor ID's to the Fcs_interest_all table and the
 % sessionData matrix. Runing all possibilities (1:6) of pixelexpansions when searching for neighboring
 % cells and storing the found neighbors for each.
@@ -37,7 +37,7 @@ function [ Fcs_Interest_all,length_neighbr,sizes_neighbrs ] = NeighbrCells_histo
 props     = regionprops(Current_Mask,'PixelIdxList');
 lenIDs    = unique(Current_Mask);
 len       = double(lenIDs(lenIDs ~= 0));
-centroids_cell = struct2cell(regionprops(Current_Mask,'Centroid'));
+centroids_cell = props_spatial_XY;
 
 %Initialize variables
 neighbour_CellId_table_all = [];
@@ -45,9 +45,10 @@ neighbr_cells          = {};
 numbr_of_neighbors     = [];
 imid_cellid = [];
 
-expansion_single = str2double(expansion(1));
-expansion_range = str2num(cell2mat(expansion(2)));
+expansion_single = 4
+expansionNeighbrs = 4;
 
+tic
 %This first part is for percent touching and number neighbor calculation on
 %a fixed pixel expansion
 CellId = len';
@@ -74,45 +75,16 @@ neighbr_cells = cellfun(@(x,y) setdiff(unique(x(:)),[0,y]),overlap,num2cell(Cell
 numbr_of_neighbors =cellfun(@(x) length(x),neighbr_cells,'UniformOutput',false);
 %Store HashID as the imageID (first column)
 imid_cellid   = cellfun(@(x) [hex2dec(HashID{rownum}) x],num2cell(CellId),'UniformOutput',false);
+toc
 
+% Neighborhood with same pixel expansion
+unOverlap = cellfun(@(x) unique(x)', overlap(:),'UniformOutput',false);
+id_count = cellfun(@(x) [0,x],num2cell(CellId),'UniformOutput',false);
+neighbr_cells(CellId) = cellfun(@(x,y) setdiff(x,y), unOverlap,id_count','UniformOutput',false);
 
-%Initializing waitbar
-hWaitbar = waitbar(0,['Updating Single Cell Information for Image', num2str(k)]);
-
-%Second part run through each variant of pixelexpansion and get neighboring cells
-for expansionNeighbrs=expansion_range
-
-    CellId = len';
-    
-    %Get coordinates of each CellId
-    [r,c] = cellfun(@(x) ind2sub([sr sc],x),{props(CellId).PixelIdxList},'UniformOutput', false);
-
-    %The below conditions check the min and max conditions for each.Do NOT CHANGE
-    rmax = cellfun(@(x) min(sr,max(x) + (expansionNeighbrs)), r);
-    rmin = cellfun(@(x) max(1,min(x)  - (expansionNeighbrs)),r);
-    cmax = cellfun(@(x) min(sc,max(x) + (expansionNeighbrs)),c);
-    cmin = cellfun(@(x) max(1,min(x)  - (expansionNeighbrs)),c);
-    se = strel('disk', expansionNeighbrs);
-    idxr = cellfun(@(x,y) x:y, num2cell(rmin),num2cell(rmax),'UniformOutput',false);
-    idxc = cellfun(@(x,y) x:y, num2cell(cmin),num2cell(cmax),'UniformOutput',false);
-    patch = cellfun(@(x,y) Current_Mask(x,y),idxr,idxc,'UniformOutput',false);
-
-    extended = cellfun(@(x,y) imdilate(x==y,se,'same'),patch,num2cell(CellId),'UniformOutput',false);
-    overlap = cellfun(@(x,y) x(y),patch,extended,'UniformOutput',false);
-    unOverlap = cellfun(@(x) unique(x)', overlap(:),'UniformOutput',false);
-    id_count = cellfun(@(x) [0,x],num2cell(CellId),'UniformOutput',false);
-    neighbr_cells(CellId) = cellfun(@(x,y) setdiff(x,y), unOverlap,id_count','UniformOutput',false);
-
-    %Function call to get the cellIds of the neighbrs in a table
-    [neighbour_CellId_table,~]= NeighbourID(neighbr_cells',expansionNeighbrs);
-    neighbour_CellId_table_all = [neighbour_CellId_table_all,neighbour_CellId_table];
-    
-    %Update waitbar
-    waitbar(expansionNeighbrs/6, hWaitbar);
-end
-
-waitbar(1, hWaitbar, 'Ready! ...');
-close(hWaitbar);
+%Function call to get the cellIds of the neighbrs in a table
+[neighbour_CellId_table,~]= NeighbourID(neighbr_cells',expansionNeighbrs);
+neighbour_CellId_table_all = [neighbour_CellId_table_all,neighbour_CellId_table];
 
 %Add Neighbour CellIds as a table
 [length_neighbr(rownum),sizes_neighbrs(rownum)] = size(neighbour_CellId_table_all);

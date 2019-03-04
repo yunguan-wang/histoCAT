@@ -94,10 +94,13 @@ for k=1:size(masks,2)
             %Check if tiff is empty -> multipage tiff
             if chandat(k,1) == 0
                 global tiff_name
+                systems
                 large_tiff_location = fullfile(Sample_Set_arranged{k,1},tiff_name);
                 get_mean = struct2array(regionprops(Current_Mask, imread(large_tiff_location,1), 'MeanIntensity'))';
+                
             else
-                %Prepare to get the mean intensities of all channels
+                
+                %Prepare to get the mean intensities of all channe   ls
                 get_mean = @(chan) struct2array(regionprops(Current_Mask, chandat{chan}, 'MeanIntensity'))';
                 mean_tab = cell2mat(arrayfun(get_mean,1:length(chandat), 'UniformOutput',0));
                 

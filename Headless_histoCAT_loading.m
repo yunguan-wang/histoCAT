@@ -47,16 +47,35 @@ save session.mat
 
 % get mean expression for multipage tiff
 for i=1:size(Marker_list,1)
-    %[get_mean,get_mean_name] = Get_mean_batch(i);
+    % Run locally
+    [get_mean,get_mean_name] = Get_mean_batch(i);
     
-    % Submit to system
-    cluster_command = 'sbatch -p short -c 1 -t 1:00:00 --mem=8000 ';
-    command_to_submit = strcat('--wrap="matlab -nodesktop -r \"Get_mean_batch(',num2str(i),')\""');
+    %     % Submit to system
+    %     cluster_command = 'sbatch -p short -c 1 -t 1:00:00 --mem=8000 ';
+    %     command_to_submit_change = strcat('--wrap="matlab -nodesktop -r \"/home/ds230/histoCAT/histoCAT/Loading_New/DataProcessing/Get_mean_batch.m(',num2str(i),')\""');
+    %     systems_call{i} = strcat(cluster_command,command_to_submit_change);
     
 end
 
-% %Run single cell processing
-% [Fcs_Interest_all] = Process_SingleCell_Tiff_Mask_batch(Tiff_all,Tiff_name,Mask_all,Fcs_Interest_all,HashID,expansionpixels);
+% Combine get_mean's
+get_mean_all = [];
+get_mean_name_all = {};
+
+for k=1:size(Marker_list,1)
+    % load all Markers and create "get_mean"
+    Name_to_load = strcat('Marker',{' '},num2str(k),'.mat');
+    load(char(Name_to_load));
+    % Create matrix with
+    get_mean_all = [get_mean_all,get_mean];
+    get_mean_name_all{1,k} = get_mean_name;
+end
+
+% Run spatial
+
+
+%Run single cell processing
+[Fcs_Interest_all] = Process_SingleCell_Tiff_Mask_batch(Tiff_all,Tiff_name,...
+    Mask_all,Fcs_Interest_all,HashID,get_mean_all,get_mean_name_all);
 
 toc
 
