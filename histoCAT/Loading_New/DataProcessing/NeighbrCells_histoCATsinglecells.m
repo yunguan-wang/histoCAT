@@ -108,11 +108,6 @@ catch
     temp_tableSinglecells = array2table(cur_cells,'VariableNames',remove_beginnum);
 end
 
-%Store single cell table, image and cellID table and neighbor table
-put('temp_tableSinglecells',temp_tableSinglecells)
-put('temp_tableimidcellid',temp_tableimidcellid);
-put('neighbour_CellId_table',neighbour_CellId_table_all);
-
 %Store everything in fcs file structure in FCS_Interest_all
 Fcs_Interest_all{rownum,1} = [temp_tableimidcellid temp_tableSinglecells temp_table_percenttouch temp_table_NumberNeighbors neighbour_CellId_table_all];
 
