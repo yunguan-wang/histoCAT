@@ -1,5 +1,5 @@
-function [ Fcs_Interest_all,length_neighbr,sizes_neighbrs ] = NeighbrCells_histoCATsinglecells(rownum,allvarnames,expansion,Current_channels,Current_Mask,...
-    Current_singlecellinfo,Fcs_Interest_all,length_neighbr,sizes_neighbrs,HashID,k )
+function [ Fcs_Interest_all,length_neighbr,sizes_neighbrs ] = NeighbrCells_histoCATsinglecells(rownum,allvarnames,Current_channels,Current_Mask,...
+    Current_singlecellinfo,Fcs_Interest_all,length_neighbr,sizes_neighbrs,HashID)
 % NEIGHBRCELLS_HISTOCATSINGLECELLS: This function finds the neighboring cells and
 % updates all neighbor ID's to the Fcs_interest_all table and the
 % sessionData matrix. Runing all possibilities (1:6) of pixelexpansions when searching for neighboring
@@ -37,7 +37,6 @@ function [ Fcs_Interest_all,length_neighbr,sizes_neighbrs ] = NeighbrCells_histo
 props     = regionprops(Current_Mask,'PixelIdxList');
 lenIDs    = unique(Current_Mask);
 len       = double(lenIDs(lenIDs ~= 0));
-centroids_cell = props_spatial_XY;
 
 %Initialize variables
 neighbour_CellId_table_all = [];
@@ -45,7 +44,7 @@ neighbr_cells          = {};
 numbr_of_neighbors     = [];
 imid_cellid = [];
 
-expansion_single = 4
+expansion_single = 4;
 expansionNeighbrs = 4;
 
 tic

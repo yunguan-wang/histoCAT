@@ -18,7 +18,7 @@ large_tiff_location = fullfile(Sample_Set_arranged{1,1},tiff_name);
 get_mean = struct2array(regionprops(Current_Mask, imread(large_tiff_location,marker_position), 'MeanIntensity'))';
 %Check to make sure it is a string
 get_mean_name_onlyname = (table2cell(Marker_list(marker_position,1)));
-get_mean = strcat('Cell_',get_mean_name_onlyname(1,1));
+get_mean_name = strcat('Cell_',get_mean_name_onlyname(1,1));
 
 save(strcat(char(get_mean_name),'.mat'),'get_mean','get_mean_name');
 

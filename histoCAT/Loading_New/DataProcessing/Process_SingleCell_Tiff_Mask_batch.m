@@ -89,7 +89,7 @@ BasicFeatures_Matrix = [cat(1,props_spatial.Area),...
 Current_singlecellinfo= [Current_singlecellinfo_nospatial, BasicFeatures_Matrix];
 
 %Function call to expand cells and get the neighbrcellIds
-[ Fcs_Interest_all,length_neighbr,sizes_neighbrs ] = NeighbrCells_histoCATsinglecells(rownum,allvarnames,expansion,Current_channels,Current_Mask,Current_singlecellinfo,...
-    Fcs_Interest_all,length_neighbr,sizes_neighbrs,HashID,k );
+[ Fcs_Interest_all,length_neighbr,sizes_neighbrs ] = NeighbrCells_histoCATsinglecells(1,allvarnames,Current_channels,Current_Mask,Current_singlecellinfo,...
+    Fcs_Interest_all,length_neighbr,sizes_neighbrs,HashID);
 
 end
