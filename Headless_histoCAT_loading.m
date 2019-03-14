@@ -1,4 +1,4 @@
-function [] = Headless_histoCAT_loading()
+function [] = Headless_histoCAT_loading(samplefolders_str,tiff_name,Marker_CSV)
 %HEADLESS_HISTOCAT_LOADING Headless loading for histoCAT
 %   This function enables headless loading in histoCAT. This also enables
 %   O2 cluster processing. It is optimized for large multipage tiffs.
@@ -9,11 +9,13 @@ tic
 
 %% Please adapt this part to your data
 % Load multipage tiff file(s)
-samplefolders = {'/Users/denis/Desktop/histoCAT_3/Example'};
-tiff_name = '33466POST.ome.tif';
+samplefolders_str = '/Users/denis/Desktop/PS1_40b_42';
+samplefolders = {samplefolders_str};
+tiff_name = 'PS1_40b_42.ome.tif';
+tiff_name_raw = strsplit(tiff_name,'.');
 
 % Where is the marker list
-Marker_CSV = '/Users/denis/Desktop/histoCAT_3/Example/Markers.csv';
+Marker_CSV = '/Users/denis/Desktop/PS1_40b_42/Nicole5_Markers.csv';
 Marker_list = readtable(Marker_CSV,'ReadVariableNames',false);
 
 % Define pixel expansion
@@ -41,14 +43,17 @@ global HashID
 [Sample_Set_arranged,Mask_all,Tiff_all,...
     Tiff_name]= Load_MatrixDB(samplefolders,Sample_Set_arranged,Mask_all);
 
-%% Submit to cluster?
+% Save session to folder
+sessionData_folder = fullfile('output',tiff_name_raw{1,1});
+mkdir(sessionData_folder);
+sessionData_name = fullfile('output',tiff_name_raw{1,1},'session.mat');
+save(sessionData_name);
 
-save session.mat
-
+%% Parfor loop or submit to cluster
 % get mean expression for multipage tiff
-for i=1:size(Marker_list,1)
+parfor i=1:size(Marker_list,1)
     % Run locally
-    [get_mean,get_mean_name] = Get_mean_batch(i);
+    [get_mean,get_mean_name] = Get_mean_batch(i,sessionData_name,sessionData_folder);
     
     %     % Submit to system
     %     cluster_command = 'sbatch -p short -c 1 -t 1:00:00 --mem=8000 ';
@@ -63,21 +68,23 @@ get_mean_name_all = {};
 
 for k=1:size(Marker_list,1)
     % load all Markers and create "get_mean"
-    Name_to_load = strcat('Marker',{' '},num2str(k),'.mat');
+    Name_to_load = fullfile(sessionData_folder,...
+        strcat('Cell_',table2cell(Marker_list(k,1)),'.mat'));
     load(char(Name_to_load));
     % Create matrix with
     get_mean_all = [get_mean_all,get_mean];
-    get_mean_name_all{1,k} = get_mean_name;
+      get_mean_name_all{1,k} = strcat('Cell_',char(table2cell(Marker_list(k,1))));
 end
 
-% Run spatial
-
-
+%% Run spatial
 %Run single cell processing
 [Fcs_Interest_all] = Process_SingleCell_Tiff_Mask_batch(Tiff_all,Tiff_name,...
     Mask_all,Fcs_Interest_all,HashID,get_mean_all,get_mean_name_all);
 
 toc
+
+writetable(Fcs_Interest_all{1,1},...
+    fullfile(sessionData_folder, strcat(tiff_name_raw{1,1},'.csv')));
 
 end
 
