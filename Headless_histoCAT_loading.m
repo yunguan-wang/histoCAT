@@ -5,6 +5,7 @@ function [] = Headless_histoCAT_loading(samplefolders_str,tiff_name,segmentation
 
 % Histology Topography Cytometry Analysis Toolbox (histoCAT)
 % Denis Schapiro - Independent Fellow -  Harvard and Broad Institute - 2019
+addpath(genpath(pwd))
 tic
 
 %% Please adapt this part to your data
@@ -51,7 +52,7 @@ global HashID
 sessionData_folder = fullfile('output',tiff_name_raw{1,1});
 mkdir(sessionData_folder);
 sessionData_name = fullfile('output',tiff_name_raw{1,1},'session.mat');
-save(sessionData_name);
+save(sessionData_name,'v7.3');
 
 %% Parfor loop or submit to cluster
 % get mean expression for multipage tiff
