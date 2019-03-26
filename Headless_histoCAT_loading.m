@@ -52,7 +52,7 @@ global HashID
 sessionData_folder = fullfile('output',tiff_name_raw{1,1});
 mkdir(sessionData_folder);
 sessionData_name = fullfile('output',tiff_name_raw{1,1},'session.mat');
-save(sessionData_name,'v7.3');
+save(sessionData_name,'-v7.3');
 
 %% Parfor loop or submit to cluster
 % get mean expression for multipage tiff
