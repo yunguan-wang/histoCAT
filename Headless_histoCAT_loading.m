@@ -20,7 +20,7 @@ tiff_name_raw = strsplit(tiff_name,'.');
 mask_location = fullfile(segmentationfolder_str,mask_name);
 
 % Where is the marker list
-Marker_CSV = '/Users/denis/Desktop/Test_folder/Triplet_40_markers.csv';
+%Marker_CSV = '/Users/denis/Desktop/Test_folder/Triplet_40_markers.csv';
 Marker_list = readtable(Marker_CSV,'ReadVariableNames',false);
 
 % Define pixel expansion
