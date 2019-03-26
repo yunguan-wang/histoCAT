@@ -1,4 +1,4 @@
-function [] = Headless_histoCAT_loading(samplefolders_str,tiff_name,Marker_CSV)
+function [] = Headless_histoCAT_loading(samplefolders_str,tiff_name,segmentationfolder_str,mask_name,Marker_CSV)
 %HEADLESS_HISTOCAT_LOADING Headless loading for histoCAT
 %   This function enables headless loading in histoCAT. This also enables
 %   O2 cluster processing. It is optimized for large multipage tiffs.
@@ -8,14 +8,19 @@ function [] = Headless_histoCAT_loading(samplefolders_str,tiff_name,Marker_CSV)
 tic
 
 %% Please adapt this part to your data
-% Load multipage tiff file(s)
-samplefolders_str = '/Users/denis/Desktop/PS1_40b_42';
+%Load multipage tiff file(s)
+%samplefolders_str = '/Users/denis/Desktop/Test_folder';
 samplefolders = {samplefolders_str};
-tiff_name = 'PS1_40b_42.ome.tif';
+%tiff_name = '33466POST.ome.tif';
 tiff_name_raw = strsplit(tiff_name,'.');
 
+% Load mask
+%segmentationfolder_str = '/Users/denis/Desktop/Test_folder'
+%mask_name = '33466POST_cellMask.tif';
+mask_location = fullfile(segmentationfolder_str,mask_name);
+
 % Where is the marker list
-Marker_CSV = '/Users/denis/Desktop/PS1_40b_42/Nicole5_Markers.csv';
+Marker_CSV = '/Users/denis/Desktop/Test_folder/Triplet_40_markers.csv';
 Marker_list = readtable(Marker_CSV,'ReadVariableNames',false);
 
 % Define pixel expansion
@@ -31,17 +36,16 @@ global tiff_name
 
 %% Extract code from "Master_LoadSamples"
 %Call global variables
-global Sample_Set_arranged
 global Mask_all
 global Fcs_Interest_all
 global HashID
 
 % Function call to store the sample folder
-[ samplefolders,fcsfiles_path,HashID] = Load_SampleFolders(HashID,samplefolders);
+[samplefolders,fcsfiles_path,HashID] = Load_SampleFolders(HashID,samplefolders);
 
 % Load all the db files
-[Sample_Set_arranged,Mask_all,Tiff_all,...
-    Tiff_name]= Load_MatrixDB(samplefolders,Sample_Set_arranged,Mask_all);
+[Mask_all,Tiff_all,...
+    Tiff_name]= Load_MatrixDB_batch(mask_location);
 
 % Save session to folder
 sessionData_folder = fullfile('output',tiff_name_raw{1,1});

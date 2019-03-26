@@ -25,7 +25,7 @@ function [Fcs_Interest_all] = Process_SingleCell_Tiff_Mask_batch(...
 % Denis Schapiro - Bodenmiller Group - UZH
 
 % Get global variables
-global Sample_Set_arranged
+global samplefolders
 
 
 %Call tiff names generating function
@@ -60,7 +60,7 @@ global tiff_name
 
 % Load all markers
 
-large_tiff_location = fullfile(Sample_Set_arranged{1,1},tiff_name);
+large_tiff_location = fullfile(samplefolders{1,1},tiff_name);
 Current_singlecellinfo_nospatial = log(get_mean_all);
 
 tic

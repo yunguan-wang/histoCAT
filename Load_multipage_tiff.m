@@ -1,4 +1,4 @@
-function [Tiff_all,Tiff_name] = Load_multipage_tiff(Sample_Set_arranged,tiff_position,i)
+function [Tiff_all,Tiff_name] = Load_multipage_tiff(i)
 % LOAD_MULTIPAGE_TIFF: Function to load multipage_tiff
 
 % Histology Topography Cytometry Analysis Toolbox (histoCAT)
