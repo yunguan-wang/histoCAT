@@ -58,7 +58,7 @@ save(sessionData_name,'-v7.3');
 % get mean expression for multipage tiff
 parfor i=1:size(Marker_list,1)
     % Run locally
-    [get_mean,get_mean_name] = Get_mean_batch(i,sessionData_name,sessionData_folder);
+    [get_mean,get_mean_name] = Get_mean_batch(i);
     
     %     % Submit to system
     %     cluster_command = 'sbatch -p short -c 1 -t 1:00:00 --mem=8000 ';
