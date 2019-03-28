@@ -31,9 +31,8 @@ expansionpixels = 4;
 transform_option_batch = 'log';
 
 % global just for batch mode
-global Marker_CSV
 global transform_option_batch
-global tiff_name
+global Tiff_name
 
 %% Extract code from "Master_LoadSamples"
 %Call global variables
