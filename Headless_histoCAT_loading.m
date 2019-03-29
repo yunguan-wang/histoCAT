@@ -1,4 +1,9 @@
-function [] = Headless_histoCAT_loading(samplefolders_str,tiff_name,segmentationfolder_str,mask_name,Marker_CSV)
+function [] = Headless_histoCAT_loading...
+    (samplefolders_str,...
+    tiff_name,...
+    segmentationfolder_str,...
+    mask_name,...
+    Marker_CSV)
 %HEADLESS_HISTOCAT_LOADING Headless loading for histoCAT
 %   This function enables headless loading in histoCAT. This also enables
 %   O2 cluster processing. It is optimized for large multipage tiffs.
@@ -24,15 +29,16 @@ mask_location = fullfile(segmentationfolder_str,mask_name);
 %Marker_CSV = '/Users/denis/Desktop/Test_folder/Triplet_40_markers.csv';
 Marker_list = readtable(Marker_CSV,'ReadVariableNames',false);
 
+% global just for batch mode
+global Marker_list
+global transform_option_batch
+global Tiff_name
+
 % Define pixel expansion
 expansionpixels = 4;
 
 % Transformation: option_list = {'Do not transform data','arcsinh','log'};
 transform_option_batch = 'log';
-
-% global just for batch mode
-global transform_option_batch
-global Tiff_name
 
 %% Extract code from "Master_LoadSamples"
 %Call global variables
@@ -57,7 +63,7 @@ save(sessionData_name,'-v7.3');
 % get mean expression for multipage tiff
 parfor i=1:size(Marker_list,1)
     % Run locally
-    [get_mean,get_mean_name] = Get_mean_batch(i);
+    [get_mean,get_mean_name] = Get_mean_batch(i,sessionData_name);
     
     %     % Submit to system
     %     cluster_command = 'sbatch -p short -c 1 -t 1:00:00 --mem=8000 ';
