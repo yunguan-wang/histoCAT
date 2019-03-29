@@ -1,4 +1,4 @@
-function [get_mean,get_mean_name] = Get_mean_batch(marker_position)
+function [get_mean,get_mean_name] = Get_mean_batch(marker_position,sessionData_name)
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
 
