@@ -27,10 +27,6 @@ function [Fcs_Interest_all] = Process_SingleCell_Tiff_Mask_batch(...
 % Get global variables
 global samplefolders
 
-
-%Call tiff names generating function
-[ ~,tiff_matrix,cell_name ] = MasterTiffNames_Generation(Mask_all,Tiff_name,Tiff_all);
-
 %If session was loaded for the first time, ask for the pixelexpansion to
 %use in order to search for neighboring cells
 
@@ -72,7 +68,8 @@ toc
 
 %Add spatial information to data matrix: variable names and
 %data
-Current_channels_nospatial = cell_name{1};
+global Marker_list
+Current_channels_nospatial = Marker_list{:,1}';
 Current_channels = [Current_channels_nospatial, BasicFeatures,XY];
 
 BasicFeatures_Matrix = [cat(1,props_spatial.Area),...
