@@ -94,9 +94,8 @@ temp_table_percenttouch = array2table(cell2mat(PercentTouching'),'VariableNames'
 
 %Add number of neighbors as table
 temp_table_NumberNeighbors = array2table(cell2mat(numbr_of_neighbors'),'VariableNames',{'Number_Neighbors'});
-[~,idx_cur] = ismember(Current_channels,allvarnames);
-cur_cells = zeros(size(Current_singlecellinfo,1),numel(allvarnames));
-cur_cells(:,idx_cur) = Current_singlecellinfo;
+cur_cells = Current_singlecellinfo;
+
 
 %Add variable names as table
 try
