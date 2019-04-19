@@ -28,11 +28,7 @@ function [Fcs_Interest_all] = Process_SingleCell_Tiff_Mask_batch(...
 load session.mat
 
 % Get global variables
-global Sample_Set_arranged
-
-
-%Call tiff names generating function
-[ ~,tiff_matrix,cell_name ] = MasterTiffNames_Generation(Mask_all,Tiff_name,Tiff_all);
+global samplefolders
 
 %If session was loaded for the first time, ask for the pixelexpansion to
 %use in order to search for neighboring cells
@@ -63,7 +59,7 @@ global tiff_name
 
 % Load all markers
 
-large_tiff_location = fullfile(Sample_Set_arranged{1,1},tiff_name);
+large_tiff_location = fullfile(samplefolders{1,1},tiff_name);
 Current_singlecellinfo_nospatial = log(get_mean_all);
 
 tic
@@ -75,7 +71,8 @@ toc
 
 %Add spatial information to data matrix: variable names and
 %data
-Current_channels_nospatial = cell_name{1};
+global Marker_list
+Current_channels_nospatial = Marker_list{:,1}';
 Current_channels = [Current_channels_nospatial, BasicFeatures,XY];
 
 BasicFeatures_Matrix = [cat(1,props_spatial.Area),...
@@ -92,7 +89,7 @@ BasicFeatures_Matrix = [cat(1,props_spatial.Area),...
 Current_singlecellinfo= [Current_singlecellinfo_nospatial, BasicFeatures_Matrix];
 
 %Function call to expand cells and get the neighbrcellIds
-[ Fcs_Interest_all,length_neighbr,sizes_neighbrs ] = NeighbrCells_histoCATsinglecells(rownum,allvarnames,expansion,Current_channels,Current_Mask,Current_singlecellinfo,...
-    Fcs_Interest_all,length_neighbr,sizes_neighbrs,HashID,k );
+[ Fcs_Interest_all,length_neighbr,sizes_neighbrs ] = NeighbrCells_histoCATsinglecells(1,allvarnames,Current_channels,Current_Mask,Current_singlecellinfo,...
+    Fcs_Interest_all,length_neighbr,sizes_neighbrs,HashID);
 
 end

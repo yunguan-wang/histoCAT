@@ -1,4 +1,4 @@
-function [Tiff_all,Tiff_name] = Load_multipage_tiff(Sample_Set_arranged,tiff_position,i)
+function [Tiff_all,Tiff_name] = Load_multipage_tiff(i)
 % LOAD_MULTIPAGE_TIFF: Function to load multipage_tiff
 
 % Histology Topography Cytometry Analysis Toolbox (histoCAT)
@@ -17,15 +17,8 @@ end
 
 %Store marker names for multipage tiffs
 % global just for batch mode
-global Marker_CSV
-if isempty(Marker_CSV) == 0
-    Tiff_name_raw = (table2cell(readtable(Marker_CSV,'ReadVariableNames',false)))';
-else
-    [file_marker_list,path_marker_list] = uigetfile('*.csv');
-    Tiff_name_raw = (table2cell(readtable(strcat(path_marker_list,file_marker_list),'ReadVariableNames',false)))';
-end
-
-
+global Marker_list
+Tiff_name_raw = (table2cell(Marker_list));
 
 %Store marker names similar to single tiff images
 for k=1:size(Tiff_name_raw,2)
