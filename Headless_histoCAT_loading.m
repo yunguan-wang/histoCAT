@@ -27,10 +27,11 @@ mask_location = fullfile(segmentationfolder_str,mask_name);
 
 % Where is the marker list
 %Marker_CSV = '/Users/denis/Desktop/Test_folder/Triplet_40_markers.csv';
-Marker_list = readtable(Marker_CSV,'ReadVariableNames',false);
+
 
 % global just for batch mode
 global Marker_list
+Marker_list = readtable(Marker_CSV,'ReadVariableNames',false);
 global transform_option_batch
 global Tiff_name
 
@@ -53,17 +54,25 @@ global HashID
 [Mask_all,Tiff_all,...
     Tiff_name]= Load_MatrixDB_batch(mask_location);
 
+% Adjusting folders so that I can use multiple masks for the same image
+prefix = strsplit(samplefolders_str,'/');
+prefix = prefix(end-1);
+tiff_name_str = tiff_name_raw(1);
+mask_names_list = strsplit(mask_name(1:end-4), '_');
+mask_name_str = mask_names_list(2);
+actual_name = strcat(prefix, '_', tiff_name_str, '_', mask_name_str);
+
 % Save session to folder
-sessionData_folder = fullfile('output',tiff_name_raw{1,1});
+sessionData_folder = fullfile('output',actual_name{1,1});
 mkdir(sessionData_folder);
-sessionData_name = fullfile('output',tiff_name_raw{1,1},'session.mat');
+sessionData_name = fullfile('output',actual_name{1,1},'session.mat');
 save(sessionData_name,'-v7.3');
 
 %% Parfor loop or submit to cluster
 % get mean expression for multipage tiff
 parfor i=1:size(Marker_list,1)
     % Run locally
-    [get_mean,get_mean_name] = Get_mean_batch(i,sessionData_name);
+    [get_mean,get_mean_name] = Get_mean_batch(i,sessionData_name, tiff_name);
     
     %     % Submit to system
     %     cluster_command = 'sbatch -p short -c 1 -t 1:00:00 --mem=8000 ';
