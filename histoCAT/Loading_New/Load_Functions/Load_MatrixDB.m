@@ -25,11 +25,28 @@ hWaitbar = waitbar(0,'Loading all files from Database. This may take a while...'
 %Loop through all the samples in DB
 for i=1:size(Sample_Set_arranged,2)
     
+    %Do not load mask and tiff, if tiff is multipage OME format (HARDCODED for
+    %t-CycIF OME export for now)
+    
+    %Get all the files in the sample folder
+    fileList = getAllFiles(char(Sample_Set_arranged(i)));
+    
+    %Extract tiffs (besides the one representing a mask)
+    tiff_position = find(~cellfun('isempty',regexp(fileList,'(?<!ask)\.tif*')))';
+    
+    %Extract image info from tiff
+    Image_info = imfinfo(char(fileList(tiff_position)));
+    
     %Load all mask from the TMA
     [Mask_all] = Load_mask(Sample_Set_arranged,Mask_all,i);
     
-    %Load all tiff files and names for each image
-    [Tiff_all,Tiff_name] = Load_tiff(Sample_Set_arranged,i);
+    %Exclude from loading if multipage tiff
+    if size(Image_info,1)>2        
+       [Tiff_all,Tiff_name] = Load_multipage_tiff(Sample_Set_arranged,tiff_position,i);
+    else
+        %Load all tiff files and names for each image
+        [Tiff_all,Tiff_name] = Load_tiff(Sample_Set_arranged,i);
+    end
     
     %Update waitbar
     waitbar(i/size(Sample_Set_arranged,2), hWaitbar);
