@@ -3,7 +3,8 @@ function [] = Headless_histoCAT_loading...
     tiff_name,...
     segmentationfolder_str,...
     mask_name,...
-    Marker_CSV)
+    Marker_CSV,...
+    output_prefix)
 %HEADLESS_HISTOCAT_LOADING Headless loading for histoCAT
 %   This function enables headless loading in histoCAT. This also enables
 %   O2 cluster processing. It is optimized for large multipage tiffs.
@@ -54,9 +55,9 @@ global HashID
     Tiff_name]= Load_MatrixDB_batch(mask_location);
 
 % Save session to folder
-sessionData_folder = fullfile('output',tiff_name_raw{1,1});
+sessionData_folder = fullfile('output',output_prefix,tiff_name_raw{1,1});
 mkdir(sessionData_folder);
-sessionData_name = fullfile('output',tiff_name_raw{1,1},'session.mat');
+sessionData_name = fullfile('output',output_prefix, tiff_name_raw{1,1},'session.mat');
 save(sessionData_name,'-v7.3');
 
 %% Parfor loop or submit to cluster
@@ -88,11 +89,12 @@ end
 
 %% Run spatial
 %Run single cell processing
+cd(sessionData_folder);
 [Fcs_Interest_all] = Process_SingleCell_Tiff_Mask_batch(Tiff_all,Tiff_name,...
     Mask_all,Fcs_Interest_all,HashID,get_mean_all,get_mean_name_all);
 
 toc
-
+cd('d:/histocat')
 writetable(Fcs_Interest_all{1,1},...
     fullfile(sessionData_folder, strcat(tiff_name_raw{1,1},'.csv')));
 

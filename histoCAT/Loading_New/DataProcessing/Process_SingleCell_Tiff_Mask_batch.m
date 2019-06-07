@@ -24,6 +24,9 @@ function [Fcs_Interest_all] = Process_SingleCell_Tiff_Mask_batch(...
 % Histology Topography Cytometry Analysis Toolbox (histoCAT)
 % Denis Schapiro - Bodenmiller Group - UZH
 
+% Load session
+load session.mat
+
 % Get global variables
 global samplefolders
 
